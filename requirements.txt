@@ -41,7 +41,7 @@ olefile==0.45.1
 PAM==0.4.2
 pbr==5.4.4
 pexpect==4.2.1
-Pillow==5.1.0
+Pillow==6.2.0
 pocket==0.3.6
 pycairo==1.16.2
 pycodestyle==2.5.0
@@ -109,7 +109,7 @@ olefile==0.45.1
 PAM==0.4.2
 pbr==5.4.4
 pexpect==4.2.1
-Pillow==5.1.0
+Pillow==6.2.0
 pocket==0.3.6
 pycairo==1.16.2
 pycodestyle==2.5.0
