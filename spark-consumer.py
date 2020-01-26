@@ -24,7 +24,6 @@ if __name__ == "__main__":
 
     def process(time, rdd):
         # current date and time
-        now = datetime.now()
         timestamp = time.time()
 
         if rdd.isEmpty() == False:
