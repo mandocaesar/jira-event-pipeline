@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     def process(time, rdd):
         if rdd.isEmpty() == False:
-            collction = rdd.collect()
+            collection = rdd.collect()
             spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
                  .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
             # insert into default.jira_events values (uuid(), localtimestamp, '')
