@@ -26,14 +26,16 @@ def delivery_callback(err, msg):
             % (msg.topic(), msg.partition(), msg.offset())
         )
 
+@app.route('/', methods=['GET'])
+def check():
+    return "I'm aliveeee!!!"
 
-@app.route("/", methods=["POST"])
+
+@app.route("/hook", methods=["POST"])
 def postJsonHandler():
     print(request.is_json)
     content = request.get_data()
-    # print(content)
     try:
-        # Produce line (without newline)
         p.produce(topic, content, callback=delivery_callback)
 
     except BufferError:
