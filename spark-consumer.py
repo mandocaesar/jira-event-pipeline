@@ -29,7 +29,7 @@ if __name__ == "__main__":
             # insert into default.jira_events values (uuid(), localtimestamp, '')
             str = ''.join(collection[0][1])
             spark.sql("INSERT INTO TABLE `" + kuduTableName +
-                      "` (uuid(),  localtimestamp, `" + collection[0] + str + "`)")
+                      "` (uuid(),  localtimestamp, `" + str + "`)")
 
             # PySpark KuduContext not yet available (https://issues.apache.org/jira/browse/KUDU-1603)
 
