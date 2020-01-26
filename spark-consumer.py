@@ -6,7 +6,6 @@ from pyspark.sql import SparkSession
 from collections import defaultdict
 from datetime import datetime
 
-print("timestamp =", timestamp)
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: kafka_to_kudu.py <kafka-brokers> <kudu-masters>")
