@@ -4,7 +4,7 @@ from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from pyspark.sql import SparkSession
 from collections import defaultdict
-from datetime import datetime
+from datetime
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
