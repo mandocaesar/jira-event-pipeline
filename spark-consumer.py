@@ -23,11 +23,13 @@ if __name__ == "__main__":
     def process(time, rdd):
         if rdd.isEmpty() == False:
             collection = rdd.collect()
+            print(collection)
             spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
                  .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
             # insert into default.jira_events values (uuid(), localtimestamp, '')
+            str = ''.join(collection)
             spark.sql("INSERT INTO TABLE `" + kuduTableName +
-                      "` (uuid(),  localtimestamp, `" + collection[0] + "`)")
+                      "` (uuid(),  localtimestamp, `" + collection[0] + str + "`)")
 
             # PySpark KuduContext not yet available (https://issues.apache.org/jira/browse/KUDU-1603)
 
