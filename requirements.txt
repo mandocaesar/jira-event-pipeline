@@ -74,7 +74,7 @@ ubuntu-drivers-common==0.0.0
 ufw==0.36
 unattended-upgrades==0.1
 unidiff==0.5.4
-urllib3==1.22
+urllib3==1.24.2
 virtualenv==16.7.9
 virtualenv-clone==0.5.3
 virtualenvwrapper==4.8.4
@@ -143,7 +143,7 @@ ubuntu-drivers-common==0.0.0
 ufw==0.36
 unattended-upgrades==0.1
 unidiff==0.5.4
-urllib3==1.22
+urllib3==1.24.2
 virtualenv==16.7.9
 virtualenv-clone==0.5.3
 virtualenvwrapper==4.8.4
