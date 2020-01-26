@@ -1,21 +1,35 @@
-from pyspark import SparkContext
+import sys
+
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
+from pyspark.sql import SparkSession
 
 if __name__ == "__main__":
-    sc = SparkContext(appName="PythonSparkConsumer")
-    ssc = StreamingContext(sc, 2)
-    #    brokers, topic = sys.argv[1:]
-    kvs = KafkaUtils.createDirectStream(
-        ssc, ["hola"], {"metadata.broker.list": "localhost:9092"}
-    )
-    lines = kvs.map(lambda x: x[1])
-    counts = (
-        lines.flatMap(lambda line: line.split(""))
-        .map(lambda word: (word, 1))
-        .reduceByKey(lambda a, b: a + b)
-    )
-    counts.pprint()
-    # print(lines)
+    if len(sys.argv) != 3:
+        print("Usage: kafka_to_kudu.py <kafka-brokers> <kudu-masters>")
+        exit(-1)
+
+    kuduTableName = "jira_events"
+    kafkaBrokers, kuduMasters = sys.argv[1:]
+    topicSet =  ["jira-event"]
+
+    spark = SparkSession.builder.appName("KafkaToKuduPython").getOrCreate()
+    ssc = StreamingContext(spark.sparkContext, 5)
+
+    dstream = KafkaUtils.createDirectStream(ssc, topicSet, {"metadata.broker.list": kafkaBrokers})
+    windowedStream = dstream.window(60)
+
+    def process(time, rdd):
+      if rdd.isEmpty() == False:
+        
+        spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master',kuduMasters)\
+             .option('kudu.table',kuduTableName).load().registerTempTable(kuduTableName)
+        #insert into default.jira_events values (uuid(), localtimestamp, '')
+        spark.sql("INSERT INTO TABLE `" + kuduTableName + "` (uuid(),  localtimestamp, `" + rdd.values()[0]+"`)")
+
+        # PySpark KuduContext not yet available (https://issues.apache.org/jira/browse/KUDU-1603)
+
+    windowedStream.foreachRDD(process)
+
     ssc.start()
     ssc.awaitTermination()
