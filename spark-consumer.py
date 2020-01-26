@@ -4,7 +4,7 @@ from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from pyspark.sql import SparkSession
 from collections import defaultdict
-from datetime import datetime
+import time
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     def process(time, rdd):
         # current date and time
         now = datetime.now()
-        timestamp = datetime.timestamp(now)
+        timestamp = time.time()
 
         if rdd.isEmpty() == False:
             collection = rdd.collect()
