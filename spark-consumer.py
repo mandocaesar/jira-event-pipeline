@@ -3,6 +3,7 @@ import sys
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from pyspark.sql import SparkSession
+from collections import defaultdict
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
@@ -23,13 +24,13 @@ if __name__ == "__main__":
     def process(time, rdd):
         if rdd.isEmpty() == False:
             collection = rdd.collect()
-            print(collection)
+            print(collection[1])
             spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
                  .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
             # insert into default.jira_events values (uuid(), localtimestamp, '')
             str = ''.join(collection)
             spark.sql("INSERT INTO TABLE `" + kuduTableName +
-                      "` (uuid(),  localtimestamp, `" + collection[0] + str + "`)")
+                      "` (uuid(),  localtimestamp, `" + collection[0] + collection[1] + "`)")
 
             # PySpark KuduContext not yet available (https://issues.apache.org/jira/browse/KUDU-1603)
 
