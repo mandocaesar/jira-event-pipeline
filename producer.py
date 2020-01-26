@@ -3,7 +3,8 @@ import sys
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        sys.stderr.write("Usage: %s <bootstrap-brokers> <topic>\n" % sys.argv[0])
+        sys.stderr.write(
+            "Usage: %s <bootstrap-brokers> <topic>\n" % sys.argv[0])
         sys.exit(1)
 
     broker = sys.argv[1]
@@ -49,4 +50,3 @@ if __name__ == "__main__":
     # Wait until all messages have been delivered
     sys.stderr.write("%% Waiting for %d deliveries\n" % len(p))
     p.flush()
-
