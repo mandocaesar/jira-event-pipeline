@@ -4,7 +4,9 @@ from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from pyspark.sql import SparkSession
 from collections import defaultdict
+from datetime import datetime
 
+print("timestamp =", timestamp)
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: kafka_to_kudu.py <kafka-brokers> <kudu-masters>")
@@ -22,6 +24,10 @@ if __name__ == "__main__":
     windowedStream = dstream.window(60)
 
     def process(time, rdd):
+        # current date and time
+        now = datetime.now()
+        timestamp = datetime.timestamp(now)
+
         if rdd.isEmpty() == False:
             collection = rdd.collect()
             spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
@@ -29,7 +35,7 @@ if __name__ == "__main__":
             # insert into default.jira_events values (uuid(), localtimestamp, '')
             str = ''.join(collection[0][1])
             spark.sql("INSERT INTO TABLE `" + kuduTableName +
-                      "` values (uuid(),  unix_timestamp(), `" + str + "`)")
+                      "` values (uuid(), `" + timestamp + "`+  unix_timestamp(), `" + str + "`)")
 
             # PySpark KuduContext not yet available (https://issues.apache.org/jira/browse/KUDU-1603)
 
