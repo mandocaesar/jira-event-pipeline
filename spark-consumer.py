@@ -11,7 +11,7 @@ if __name__ == "__main__":
         print("Usage: kafka_to_kudu.py <kafka-brokers> <kudu-masters>")
         exit(-1)
 
-    kuduTableName = "default.jira_events"
+    kuduTableName = "jira_events"
     kafkaBrokers, kuduMasters = sys.argv[1:]
     topicSet = ["jira-event"]
 
