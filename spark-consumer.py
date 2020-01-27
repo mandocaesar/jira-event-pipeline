@@ -11,7 +11,7 @@ if __name__ == "__main__":
         print("Usage: kafka_to_kudu.py <kafka-brokers> <kudu-masters>")
         exit(-1)
 
-    kuduTableName = "jira_events"
+    kuduTableName = "default.jira_events"
     kafkaBrokers, kuduMasters = sys.argv[1:]
     topicSet = ["jira-event"]
 
@@ -33,7 +33,7 @@ if __name__ == "__main__":
                  .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
             # insert into default.jira_events values (uuid(), localtimestamp, '')
             str = ''.join(collection[0][1])
-            spark.sql("INSERT INTO TABLE {table} values (uuid(), current_timestamp(), '{payload}')".format(
+            spark.sql("INSERT INTO TABLE {table} from (select uuid(), current_timestamp(), '{payload}')".format(
                 table=kuduTableName, payload=result[0]))
             # spark.sql("INSERT INTO TABLE `" + kuduTableName +
             #           "` values (uuid(), `" + unix_timestamp() +`",`" + str + "`)")
