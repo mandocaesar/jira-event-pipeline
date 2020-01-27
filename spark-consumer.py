@@ -33,7 +33,7 @@ if __name__ == "__main__":
                  .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
             # insert into default.jira_events values (uuid(), localtimestamp, '')
             str = ''.join(collection[0][1])
-            spark.sql("INSERT INTO TABLE {table} values (uuid(), {timestamp}), '{payload}'".format(
+            spark.sql("INSERT INTO TABLE {table} values (uuid(), {timestamp}, '{payload}')".format(
                 table=kuduTableName, timestamp=timestamp, payload=result[0]))
             # spark.sql("INSERT INTO TABLE `" + kuduTableName +
             #           "` values (uuid(), `" + unix_timestamp() +`",`" + str + "`)")
