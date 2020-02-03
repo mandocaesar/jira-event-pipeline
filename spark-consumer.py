@@ -23,7 +23,7 @@ if __name__ == "__main__":
     windowedStream = dstream.window(60)
 
     def debug(variable):
-        print variable, '=', repr(eval(variable))
+        print(variable, '=', repr(eval(variable)))
 
     def process(time, rdd):
         if rdd.isEmpty() == False:
