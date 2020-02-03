@@ -29,7 +29,9 @@ if __name__ == "__main__":
         if rdd.isEmpty() == False:
             collection = rdd.collect()
             result = list(zip(*collection))[1]
-            spark.read.json("{}".format(result[0])).show
+            a = "{}".format(result[0])
+            print(a)
+            # spark.read.json().show
             # debug(result[0])
             spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
                  .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
