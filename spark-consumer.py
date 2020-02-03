@@ -3,7 +3,7 @@ import sys
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from pyspark.sql import SparkSession
-from pyspark.sql.types import MapType,ArrayType, FloatType, StringType, StructField, StructType
+from pyspark.sql.types import MapType, ArrayType, FloatType, StringType, StructField, StructType
 from collections import defaultdict
 import time
 
@@ -40,15 +40,15 @@ if __name__ == "__main__":
                                                               .add("id", StringType())
                                                               .add("description", StringType())
                                                               .add("name", StringType())
-                                                              .add("subtask", StringType()))))
+                                                              .add("subtask", StringType())))))
              .add("timespent", StringType())
              .add("project", MapType(StringType(), StructType()
                                     .add("self", StringType())
-                                    .add("id",StringType())
-                                    .add("key",StringType())
+                                    .add("id", StringType())
+                                    .add("key", StringType())
                                     .add("name", StringType())
                                     .add("projectTypeKey", StringType())))) \
-             .add("fixVersions", ArrayType(StringType(),True), True) \
+             .add("fixVersions", ArrayType(StringType(), True), True) \
              .add("aggregatetimespent", StringType(), True) \
              .add("resolution", StringType(), True) \
              .add("resolutiondate", StringType(), True) \
