@@ -21,10 +21,10 @@ if __name__ == "__main__":
     spark.sparkContext.setLogLevel("ERROR")
     df = spark.readStream.format("kafka").option("kafka.bootstrap.servers", kafkaBrokers).option(
         "subscribe", "jira-event").option("startingOffsets", "earliest").option("failOnDataLoss", "false").load()
+    query2 = df.writeStream.format("console").start()
 
     df.printSchema()
-    df.writeStream.format("console").outputMode(
-        "append").start().awaitTermination()
+    query2.awaitTermination()
     # dstream = KafkaUtils.createDirectStream(
     #     ssc, topicSet, {"metadata.broker.list": kafkaBrokers})
     # windowedStream = dstream.window(60)
