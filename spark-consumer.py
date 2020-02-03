@@ -23,7 +23,7 @@ if __name__ == "__main__":
         "subscribe", "jira-event").option("startingOffsets", "earliest").option("failOnDataLoss", "false").load()
 
     df.printSchema()
-
+    df.show()
     # dstream = KafkaUtils.createDirectStream(
     #     ssc, topicSet, {"metadata.broker.list": kafkaBrokers})
     # windowedStream = dstream.window(60)
