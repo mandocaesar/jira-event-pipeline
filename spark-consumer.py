@@ -5,7 +5,7 @@ from pyspark.streaming.kafka import KafkaUtils
 from pyspark.sql import SparkSession
 from pyspark.sql.types import MapType, ArrayType, FloatType, StringType, StructField, StructType
 from collections import defaultdict
-import org.apache.spark.sql.functions._
+from pyspark.sql.functions import from_json, col
 import time
 
 if __name__ == "__main__":
