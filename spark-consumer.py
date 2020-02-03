@@ -66,6 +66,8 @@ if __name__ == "__main__":
 
     parsed=df.select(from_json(col("value").cast("string"),
                                  schema, jsonOptions).alias("parsed_value"))
+
+    result=df.select("*").show()
     parsed.printSchema()
     df.printSchema()
 
