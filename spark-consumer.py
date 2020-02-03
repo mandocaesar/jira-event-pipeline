@@ -29,7 +29,7 @@ if __name__ == "__main__":
             spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
                  .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
 
-            str = ''.join(collection[0][1])
+           # str = ''.join(collection[0][1])
             df = spark.read.json(result[0])
           #  df.printSchema()
             df.show()
