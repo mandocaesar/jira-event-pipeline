@@ -52,7 +52,7 @@ if __name__ == "__main__":
              .add("aggregatetimespent", StringType(), True) \
              .add("resolution", StringType(), True) \
              .add("resolutiondate", StringType(), True) \
-             .add("created", StringType()))
+             .add("created", StringType())
 
     nestTimestampFormat="yyyy-MM-dd'T'HH:mm:ss.sss'Z'"
     jsonOptions={"timestampFormat": nestTimestampFormat}
