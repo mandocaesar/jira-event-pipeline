@@ -23,10 +23,7 @@ if __name__ == "__main__":
     windowedStream = dstream.window(60)
 
     def debug(x):
-        frame = inspect.currentframe().f_back
-        s = inspect.getframeinfo(frame).code_context[0]
-        r = re.search(r"\((.*)\)", s).group(1)
-        print("{} = {}".format(r, x))
+        print("{}".format(x))
 
     def process(time, rdd):
         if rdd.isEmpty() == False:
