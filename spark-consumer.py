@@ -64,9 +64,10 @@ if __name__ == "__main__":
     parsed=df.select(from_json(col("value").cast("string"),
                                schema).alias("parsed_value")).writeStream.format("console").outputMode("append").start().awaitTermination()
 
+    
     #result = parsed.writeStream.format("console").outputMode("append").start().awaitTermination()
     #parsed.printSchema()
-    #df.printSchema()
+    df.printSchema()
 
     # spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
     #      .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
