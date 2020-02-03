@@ -55,9 +55,6 @@ if __name__ == "__main__":
              .add("resolutiondate", StringType(), True) \
              .add("created", StringType())
 
-    nestTimestampFormat="yyyy-MM-dd'T'HH:mm:ss.sss'Z'"
-    jsonOptions={"timestampFormat": nestTimestampFormat}
-
     spark.sparkContext.setLogLevel("ERROR")
     df=spark.readStream.format("kafka").option("kafka.bootstrap.servers", kafkaBrokers).option(
         "subscribe", "jira-event").option("startingOffsets", "earliest").option("failOnDataLoss", "false").load()
@@ -65,11 +62,11 @@ if __name__ == "__main__":
     query=df.writeStream.outputMode("append").format("console").start()
 
     parsed=df.select(from_json(col("value").cast("string"),
-                                 schema, jsonOptions).alias("parsed_value"))
+                               schema).alias("parsed_value")).writeStream.format("console").outputMode("append").start().awaitTermination()
 
-    result = parsed.writeStream.format("console").outputMode("append").start().awaitTermination()
-    parsed.printSchema()
-    df.printSchema()
+    #result = parsed.writeStream.format("console").outputMode("append").start().awaitTermination()
+    #parsed.printSchema()
+    #df.printSchema()
 
     # spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
     #      .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
