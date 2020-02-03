@@ -30,7 +30,7 @@ if __name__ == "__main__":
                  .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
 
             str = ''.join(collection[0][1])
-            val df = spark.read.json(result[0])
+            df = spark.read.json(result[0])
             df.printSchema()
             df.show(true)
             spark.sql("INSERT INTO TABLE {table} from (select uuid(), current_timestamp(), '{payload}')".format(
