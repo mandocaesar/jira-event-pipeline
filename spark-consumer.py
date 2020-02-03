@@ -3,7 +3,7 @@ import sys
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
 from pyspark.sql import SparkSession
-from pyspark.sql.types import ArrayType, FloatType, StringType, StructField, StructType
+from pyspark.sql.types import MapType,ArrayType, FloatType, StringType, StructField, StructType
 from collections import defaultdict
 import time
 
