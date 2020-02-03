@@ -24,7 +24,16 @@ if __name__ == "__main__":
     query = df.writeStream.outputMode("append").format("console").start()
 
     df.printSchema()
+
+    for row in df.rdd.collect():
+        print(row.value())
+        # spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
+        #      .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
+        # spark.sql("INSERT INTO TABLE {table} from (select uuid(), current_timestamp(), '{payload}')".format(
+        #     table=kuduTableName, payload=row.value()))
+
     query.awaitTermination()
+
     # dstream = KafkaUtils.createDirectStream(
     #     ssc, topicSet, {"metadata.broker.list": kafkaBrokers})
     # windowedStream = dstream.window(60)
