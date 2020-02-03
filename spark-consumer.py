@@ -31,8 +31,8 @@ if __name__ == "__main__":
 
             str = ''.join(collection[0][1])
             df = spark.read.json(result[0])
-            df.printSchema()
-            df.show(True)
+          #  df.printSchema()
+            df.show()
             spark.sql("INSERT INTO TABLE {table} from (select uuid(), current_timestamp(), '{payload}')".format(
                 table=kuduTableName, payload=result[0]))
 
