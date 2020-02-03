@@ -60,8 +60,10 @@ if __name__ == "__main__":
         "subscribe", "jira-event").option("startingOffsets", "earliest").option("failOnDataLoss", "false").load()
 
     # query=df.writeStream.outputMode("append").format("console").start()
-    df.show(1)
-    df.select('value').show()
+    # df.show(1)
+    df.select('value').show().writeStream.format(
+        "console").outputMode("append").start().awaitTermination()
+
     parsed = df.select(from_json(col("value").cast("string"),
                                  schema).alias("parsed_value")).writeStream.format("console").outputMode("append").start().awaitTermination()
 
