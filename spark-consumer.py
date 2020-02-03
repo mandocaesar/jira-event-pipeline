@@ -18,33 +18,44 @@ if __name__ == "__main__":
     spark = SparkSession.builder.appName("KafkaToKuduPython").getOrCreate()
     ssc = StreamingContext(spark.sparkContext, 5)
 
-    dstream = KafkaUtils.createDirectStream(
-        ssc, topicSet, {"metadata.broker.list": kafkaBrokers})
-    windowedStream = dstream.window(60)
+    spark.sparkContext.setLogLevel("ERROR")
+    df = spark.readStream
+    .format("kafka")
+    .option("kafka.bootstrap.servers", kafkaBrokers)
+    .option("subscribe", args.getOrElse("kafka-topic", "jira-event"))
+    .option("startingOffsets", "earliest")
+    .option("failOnDataLoss", "false")
+    .load()
 
-    def debug(x):
-        print("{}".format(x))
+    df.printSchema()
 
-    def process(time, rdd):
-        if rdd.isEmpty() == False:
-            collection = rdd.collect()
-            result = list(zip(*collection))[1]
-            a = "{}".format(result[0])
-            # print(a)
-            spark.read.json(a).show()
-            # debug(result[0])
-            spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
-                 .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
+    # dstream = KafkaUtils.createDirectStream(
+    #     ssc, topicSet, {"metadata.broker.list": kafkaBrokers})
+    # windowedStream = dstream.window(60)
 
-           # str = ''.join(collection[0][1])
+    # def debug(x):
+    #     print("{}".format(x))
 
-            # df.show(truncate=False)
-          #  df.printSchema()
-           # df.show()
-            spark.sql("INSERT INTO TABLE {table} from (select uuid(), current_timestamp(), '{payload}')".format(
-                table=kuduTableName, payload=result[0]))
+    # def process(time, rdd):
+    #     if rdd.isEmpty() == False:
+    #         collection = rdd.collect()
+    #         result = list(zip(*collection))[1]
+    #         a = "{}".format(result[0])
+    #         # print(a)
+    #         spark.read.json(a).show()
+    #         # debug(result[0])
+    #         spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
+    #              .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
 
-    windowedStream.foreachRDD(process)
+    #        # str = ''.join(collection[0][1])
+
+    #         # df.show(truncate=False)
+    #       #  df.printSchema()
+    #        # df.show()
+    #         spark.sql("INSERT INTO TABLE {table} from (select uuid(), current_timestamp(), '{payload}')".format(
+    #             table=kuduTableName, payload=result[0]))
+
+    # windowedStream.foreachRDD(process)
 
     ssc.start()
     ssc.awaitTermination()
