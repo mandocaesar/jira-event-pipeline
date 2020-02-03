@@ -26,13 +26,15 @@ if __name__ == "__main__":
         if rdd.isEmpty() == False:
             collection = rdd.collect()
             result = list(zip(*collection))[1]
+            spark.read.json(result[0]).show
             spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
                  .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
 
            # str = ''.join(collection[0][1])
-            df = spark.read.json(result[0])
+
+            # df.show(truncate=False)
           #  df.printSchema()
-            df.show()
+           # df.show()
             spark.sql("INSERT INTO TABLE {table} from (select uuid(), current_timestamp(), '{payload}')".format(
                 table=kuduTableName, payload=result[0]))
 
