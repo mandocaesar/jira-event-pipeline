@@ -22,11 +22,15 @@ if __name__ == "__main__":
         ssc, topicSet, {"metadata.broker.list": kafkaBrokers})
     windowedStream = dstream.window(60)
 
+    def debug(variable):
+        print variable, '=', repr(eval(variable))
+
     def process(time, rdd):
         if rdd.isEmpty() == False:
             collection = rdd.collect()
             result = list(zip(*collection))[1]
-            spark.read.json(result[0]).show
+            # spark.read.json(result[0]).show
+            debug(result[0])
             spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
                  .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
 
