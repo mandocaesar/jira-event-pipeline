@@ -23,22 +23,18 @@ if __name__ == "__main__":
     windowedStream = dstream.window(60)
 
     def process(time, rdd):
-        # current date and time
-        timestamp = time.time()
-
         if rdd.isEmpty() == False:
             collection = rdd.collect()
             result = list(zip(*collection)[1])
             spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
                  .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
-            # insert into default.jira_events values (uuid(), localtimestamp, '')
+
             str = ''.join(collection[0][1])
+            val df = spark.read.json(result[0])
+            df.printSchema()
+            df.show(true)
             spark.sql("INSERT INTO TABLE {table} from (select uuid(), current_timestamp(), '{payload}')".format(
                 table=kuduTableName, payload=result[0]))
-            # spark.sql("INSERT INTO TABLE `" + kuduTableName +
-            #           "` values (uuid(), `" + unix_timestamp() +`",`" + str + "`)")
-
-            # PySpark KuduContext not yet available (https://issues.apache.org/jira/browse/KUDU-1603)
 
     windowedStream.foreachRDD(process)
 
