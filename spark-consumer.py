@@ -30,8 +30,8 @@ if __name__ == "__main__":
             collection = rdd.collect()
             result = list(zip(*collection))[1]
             a = "{}".format(result[0])
-            print(a)
-            # spark.read.json().show
+            # print(a)
+            spark.read.json(a).show()
             # debug(result[0])
             spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
                  .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
