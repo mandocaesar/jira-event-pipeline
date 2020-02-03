@@ -44,37 +44,38 @@ if __name__ == "__main__":
                                                               .add("subtask", StringType())))))
              .add("timespent", StringType())
              .add("project", MapType(StringType(), StructType()
-                                    .add("self", StringType())
-                                    .add("id", StringType())
-                                    .add("key", StringType())
-                                    .add("name", StringType())
-                                    .add("projectTypeKey", StringType())))) \
-             .add("fixVersions", ArrayType(StringType(), True), True) \
-             .add("aggregatetimespent", StringType(), True) \
-             .add("resolution", StringType(), True) \
-             .add("resolutiondate", StringType(), True) \
-             .add("created", StringType())
+                                     .add("self", StringType())
+                                     .add("id", StringType())
+                                     .add("key", StringType())
+                                     .add("name", StringType())
+                                     .add("projectTypeKey", StringType())))) \
+        .add("fixVersions", ArrayType(StringType(), True), True) \
+        .add("aggregatetimespent", StringType(), True) \
+        .add("resolution", StringType(), True) \
+        .add("resolutiondate", StringType(), True) \
+        .add("created", StringType())
 
     spark.sparkContext.setLogLevel("ERROR")
-    df=spark.readStream.format("kafka").option("kafka.bootstrap.servers", kafkaBrokers).option(
+    df = spark.readStream.format("kafka").option("kafka.bootstrap.servers", kafkaBrokers).option(
         "subscribe", "jira-event").option("startingOffsets", "earliest").option("failOnDataLoss", "false").load()
 
-    query=df.writeStream.outputMode("append").format("console").start()
+    # query=df.writeStream.outputMode("append").format("console").start()
+    df.show(1)
+    df.select('value').show()
+    parsed = df.select(from_json(col("value").cast("string"),
+                                 schema).alias("parsed_value")).writeStream.format("console").outputMode("append").start().awaitTermination()
 
-    parsed=df.select(from_json(col("value").cast("string"),
-                               schema).alias("parsed_value")).writeStream.format("console").outputMode("append").start().awaitTermination()
-
-    
     #result = parsed.writeStream.format("console").outputMode("append").start().awaitTermination()
-    #parsed.printSchema()
-    df.printSchema()
+    parsed.printSchema()
+
+    # df.printSchema()
 
     # spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
     #      .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
     # spark.sql("INSERT INTO TABLE {table} from (select uuid(), current_timestamp(), '{payload}')".format(
     #     table=kuduTableName, payload=row.value()))
 
-    query.awaitTermination()
+   # query.awaitTermination()
 
     # dstream = KafkaUtils.createDirectStream(
     #     ssc, topicSet, {"metadata.broker.list": kafkaBrokers})
@@ -104,5 +105,5 @@ if __name__ == "__main__":
 
     # windowedStream.foreachRDD(process)
 
-    ssc.start()
-    ssc.awaitTermination()
+    # ssc.start()
+    # ssc.awaitTermination()
