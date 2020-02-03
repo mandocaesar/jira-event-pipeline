@@ -19,8 +19,8 @@ if __name__ == "__main__":
     ssc = StreamingContext(spark.sparkContext, 5)
 
     spark.sparkContext.setLogLevel("ERROR")
-    df = spark.readStream.format("kafka").option("kafka.bootstrap.servers", kafkaBrokers).option("subscribe", args.getOrElse(
-        "kafka-topic", "jira-event")).option("startingOffsets", "earliest").option("failOnDataLoss", "false").load()
+    df = spark.readStream.format("kafka").option("kafka.bootstrap.servers", kafkaBrokers).option(
+        "subscribe", "jira-event").option("startingOffsets", "earliest").option("failOnDataLoss", "false").load()
 
     df.printSchema()
 
