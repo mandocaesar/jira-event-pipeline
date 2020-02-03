@@ -67,7 +67,7 @@ if __name__ == "__main__":
     parsed=df.select(from_json(col("value").cast("string"),
                                  schema, jsonOptions).alias("parsed_value"))
 
-    result=parsed.select("*").show()
+    result = parsed.writeStream.format("console").outputMode("append").start().awaitTermination()
     parsed.printSchema()
     df.printSchema()
 
