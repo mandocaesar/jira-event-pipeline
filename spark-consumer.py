@@ -18,19 +18,59 @@ if __name__ == "__main__":
     spark = SparkSession.builder.appName("KafkaToKuduPython").getOrCreate()
     ssc = StreamingContext(spark.sparkContext, 5)
 
-    spark.sparkContext.setLogLevel("ERROR")
-    df = spark.readStream.format("kafka").option("kafka.bootstrap.servers", kafkaBrokers).option(
-        "subscribe", "jira-event").option("startingOffsets", "earliest").option("failOnDataLoss", "false").load()
-    query = df.writeStream.outputMode("append").format("console").start()
+    schema = StructType() \
+        .add("timestamp", StringType()) \
+        .add("webhookEvent", StringType()) \
+        .add("issue_event_type_name", StringType()) \
+        .add("user", StructType()
+             .add("self", StringType())
+             .add("accountId", StringType())
+             .add("displayName", StringType())
+             .add("active", StringType())
+             .add("accountType", StringType())) \
+        .add("issue", StructType()
+             .add("id", StringType())
+             .add("self", StringType())
+             .add("key", StringType())
+             .add("fields", MapType(StringType(), StructType()
+                                    .add("statuscategorychangedate", StringType())
+                                    .add("issuetype", MapType(StringType(), StructType()
+                                                              .add("self", StringType())
+                                                              .add("id", StringType())
+                                                              .add("description", StringType())
+                                                              .add("name", StringType())
+                                                              .add("subtask", StringType()))))
+             .add("timespent", StringType())
+             .add("project", MapType(StringType(), StructType()
+                                    .add("self", StringType())
+                                    .add("id",StringType())
+                                    .add("key",StringType())
+                                    .add("name", StringType())
+                                    .add("projectTypeKey", StringType())))) \
+             .add("fixVersions", ArrayType(StringType(),True), True) \
+             .add("aggregatetimespent", StringType(), True) \
+             .add("resolution", StringType(), True) \
+             .add("resolutiondate", StringType(), True) \
+             .add("created", StringType()))
 
+    nestTimestampFormat="yyyy-MM-dd'T'HH:mm:ss.sss'Z'"
+    jsonOptions={"timestampFormat": nestTimestampFormat}
+
+    spark.sparkContext.setLogLevel("ERROR")
+    df=spark.readStream.format("kafka").option("kafka.bootstrap.servers", kafkaBrokers).option(
+        "subscribe", "jira-event").option("startingOffsets", "earliest").option("failOnDataLoss", "false").load()
+
+    query=df.writeStream.outputMode("append").format("console").start()
+
+    parsed=df.select(from_json(col("value").cast("string"),
+                                 schema, jsonOptions).alias("parsed_value"))
+    parsed.printSchema()
     df.printSchema()
 
-    for row in df.rdd.collect():
-        print(row.value())
-        # spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
-        #      .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
-        # spark.sql("INSERT INTO TABLE {table} from (select uuid(), current_timestamp(), '{payload}')".format(
-        #     table=kuduTableName, payload=row.value()))
+    # spark.read.format('org.apache.kudu.spark.kudu').option('kudu.master', kuduMasters)\
+    #      .option('kudu.table', kuduTableName).load().registerTempTable(kuduTableName)
+    # spark.sql("INSERT INTO TABLE {table} from (select uuid(), current_timestamp(), '{payload}')".format(
+    #     table=kuduTableName, payload=row.value()))
 
     query.awaitTermination()
 
